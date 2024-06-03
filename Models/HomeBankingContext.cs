@@ -16,5 +16,7 @@ namespace HomeBanking2._0.Models
 
         public DbSet<Account> Account { get; set; }
 
+        public DbSet<Transaction> Transactions { get; set; }
+
     }
 }

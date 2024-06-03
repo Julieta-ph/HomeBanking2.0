@@ -18,6 +18,10 @@ builder.Services.AddDbContext<HomeBankingContext>(
 
 builder.Services.AddScoped<IClientRepository, ClientRepository>();
 
+builder.Services.AddScoped<IAccountRepository, AccountRepository>();
+
+
+
 var app = builder.Build();
 
 using (var scope = app.Services.CreateScope())
