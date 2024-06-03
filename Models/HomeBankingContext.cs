@@ -18,5 +18,10 @@ namespace HomeBanking2._0.Models
 
         public DbSet<Transaction> Transactions { get; set; }
 
+        public DbSet<Loan> Loans { get; set; }
+
+        public DbSet<ClientLoan> ClientLoans { get; set; }
+
+
     }
 }
