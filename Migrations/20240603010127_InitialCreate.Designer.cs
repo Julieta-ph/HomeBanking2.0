@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace HomeBanking2._0.Migrations
 {
     [DbContext(typeof(HomeBankingContext))]
-    [Migration("20240530122714_InitialCreate")]
+    [Migration("20240603010127_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
