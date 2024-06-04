@@ -8,9 +8,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddRazorPages();
-
 builder.Services.AddControllers();
-
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
@@ -23,7 +21,6 @@ builder.Services.AddDbContext<HomeBankingContext>(
 //Add repository to the container
 
 builder.Services.AddScoped<IClientRepository, ClientRepository>();
-
 builder.Services.AddScoped<IAccountRepository, AccountRepository>();
 
 //autenticación
@@ -36,7 +33,7 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
           options.LoginPath = new PathString("/index.html");
       });
 
-//autorización
+//autorización POLITICA PARA INGRESAR A NUESTRO BACKEND
 builder.Services.AddAuthorization(options =>
 {
     options.AddPolicy("ClientOnly", policy => policy.RequireClaim("Client"));
