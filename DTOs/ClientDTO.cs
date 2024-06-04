@@ -19,6 +19,8 @@ namespace HomeBanking2._0.DTOs
 
         public ICollection<CardDTO> Cards { get; set; }
 
+        public ICollection<ClientLoginDTO> ClientLogins { get; set; }
+
         public ClientDTO(Client client)
         {
             Id = client.Id;
@@ -29,7 +31,7 @@ namespace HomeBanking2._0.DTOs
             Accounts = client.Accounts.Select(a => new AccountDTO(a)).ToList();
             Loans = client.ClientLoans.Select(a => new ClientLoanDTO(a)).ToList();
             Cards = client.Cards.Select(a => new CardDTO(a)).ToList();
-
+            ClientLogins = client.ClientLogins.Select(a => new ClientLoginDTO(a)).ToList();
         }
 
     }

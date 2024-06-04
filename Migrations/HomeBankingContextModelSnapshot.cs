@@ -142,6 +142,36 @@ namespace HomeBanking2._0.Migrations
                     b.ToTable("ClientLoans");
                 });
 
+            modelBuilder.Entity("HomeBanking2._0.Models.ClientLogin", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
+
+                    b.Property<long>("ClientId")
+                        .HasColumnType("bigint");
+
+                    b.Property<string>("Email")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("FirstName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("LastName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Password")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ClientId");
+
+                    b.ToTable("ClientLogin");
+                });
+
             modelBuilder.Entity("HomeBanking2._0.Models.Loan", b =>
                 {
                     b.Property<long>("Id")
@@ -235,6 +265,17 @@ namespace HomeBanking2._0.Migrations
                     b.Navigation("Loan");
                 });
 
+            modelBuilder.Entity("HomeBanking2._0.Models.ClientLogin", b =>
+                {
+                    b.HasOne("HomeBanking2._0.Models.Client", "Client")
+                        .WithMany("ClientLogins")
+                        .HasForeignKey("ClientId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Client");
+                });
+
             modelBuilder.Entity("HomeBanking2._0.Models.Transaction", b =>
                 {
                     b.HasOne("HomeBanking2._0.Models.Account", "Account")
@@ -258,6 +299,8 @@ namespace HomeBanking2._0.Migrations
                     b.Navigation("Cards");
 
                     b.Navigation("ClientLoans");
+
+                    b.Navigation("ClientLogins");
                 });
 
             modelBuilder.Entity("HomeBanking2._0.Models.Loan", b =>

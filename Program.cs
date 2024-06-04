@@ -2,11 +2,17 @@ using HomeBanking2._0.Models;
 using HomeBanking2._0.Repositories.Implementations;
 using HomeBanking2._0.Repositories;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Authentication.Cookies;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddRazorPages();
+
+builder.Services.AddControllers();
+
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
 
 //Add context to the container
 
@@ -20,7 +26,21 @@ builder.Services.AddScoped<IClientRepository, ClientRepository>();
 
 builder.Services.AddScoped<IAccountRepository, AccountRepository>();
 
+//autenticación
 
+
+builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+      .AddCookie(options =>
+      {
+          options.ExpireTimeSpan = TimeSpan.FromMinutes(10);
+          options.LoginPath = new PathString("/index.html");
+      });
+
+//autorización
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("ClientOnly", policy => policy.RequireClaim("Client"));
+});
 
 var app = builder.Build();
 
@@ -49,11 +69,21 @@ if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Error");
 }
+else
+{
+    app.UseSwagger();
+    app.UseSwaggerUI();
+}
+
+
 app.UseStaticFiles();
 
 app.UseRouting();
 
 app.MapControllers();
+
+//le decimos que use autenticación
+app.UseAuthentication();
 
 app.UseAuthorization();
 

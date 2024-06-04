@@ -13,5 +13,8 @@
         public ICollection<ClientLoan> ClientLoans { get; set; }
 
         public ICollection<Card> Cards { get; set; }
+
+        public ICollection<ClientLogin> ClientLogins { get; set; }
+
     }
 }
