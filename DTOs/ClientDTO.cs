@@ -11,9 +11,9 @@ namespace HomeBanking2._0.DTOs
         public string LastName { get; set; }
         public string FirstName { get; set; }
         public string Email { get; set; }
-        public string Password { get; set; }
+      
 
-        public ICollection<AccountDTO> Accounts { get; set; }
+        public ICollection<AccountClientDTO> Accounts { get; set; }
 
         public ICollection<ClientLoanDTO> Loans { get; set; }
 
@@ -25,8 +25,7 @@ namespace HomeBanking2._0.DTOs
             LastName = client.LastName;
             FirstName = client.FirstName;
             Email = client.Email; 
-            Password = client.Password;
-            Accounts = client.Accounts.Select(a => new AccountDTO(a)).ToList();
+            Accounts = client.Accounts.Select(a => new AccountClientDTO(a)).ToList();
             Loans = client.ClientLoans.Select(a => new ClientLoanDTO(a)).ToList();
             Cards = client.Cards.Select(a => new CardDTO(a)).ToList();
 

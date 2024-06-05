@@ -33,6 +33,7 @@ using (var scope = app.Services.CreateScope())
     {
 
         // En este paso buscamos un service que este con la clase HomeBankingContext
+
         var context = services.GetRequiredService<HomeBankingContext>();
         DBInitializer.Initialize(context);
     }

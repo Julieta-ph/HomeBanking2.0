@@ -14,6 +14,8 @@ namespace HomeBanking2._0.DTOs
 
         public DateTime Date { get; set; }
 
+       
+
         public TransactionDTO(Transaction transaction)
         {
             Id = transaction.Id;
