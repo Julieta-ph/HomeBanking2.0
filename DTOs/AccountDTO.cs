@@ -13,8 +13,6 @@ namespace HomeBanking2._0.DTOs
 
         public double Balance { get; set; }
 
-        public ICollection<TransactionDTO> Transactions { get; set; }
-
         public AccountDTO(Account account)
         {
             Id = account.Id;

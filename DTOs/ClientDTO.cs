@@ -1,11 +1,12 @@
 ﻿using HomeBanking2._0.Models;
-using System.Text.Json.Serialization;
+using System.Text.Json;
+
 
 namespace HomeBanking2._0.DTOs
 {
     public class ClientDTO
     {
-        [JsonIgnore]
+        
 
         public long Id { get; set; }
         public string LastName { get; set; }
@@ -19,7 +20,7 @@ namespace HomeBanking2._0.DTOs
 
         public ICollection<CardDTO> Cards { get; set; }
 
-        public ICollection<ClientLoginDTO> ClientLogins { get; set; }
+        
 
         public ClientDTO(Client client)
         {
@@ -31,8 +32,15 @@ namespace HomeBanking2._0.DTOs
             Accounts = client.Accounts.Select(a => new AccountDTO(a)).ToList();
             Loans = client.ClientLoans.Select(a => new ClientLoanDTO(a)).ToList();
             Cards = client.Cards.Select(a => new CardDTO(a)).ToList();
-            ClientLogins = client.ClientLogins.Select(a => new ClientLoginDTO(a)).ToList();
+            
         }
 
+        public ClientDTO(NewClientDTO newClientDTO)
+        {
+            FirstName = newClientDTO.FirstName;
+            LastName = newClientDTO.LastName;
+            Email = newClientDTO.Email;
+
+        }
     }
 }

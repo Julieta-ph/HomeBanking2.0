@@ -1,14 +1,17 @@
 ﻿using HomeBanking2._0.DTOs;
 using HomeBanking2._0.Models;
 using HomeBanking2._0.Repositories;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.IdentityModel.Tokens;
 
 
 namespace HomeBanking2._0.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+
     public class ClientsController : ControllerBase
     {
         private readonly IClientRepository _clientRepository;
@@ -27,7 +30,7 @@ namespace HomeBanking2._0.Controllers
             try
             {
                 var clients = _clientRepository.GetAllClients();
-                var clientsDTO = clients.Select(c => new ClientDTO(c)).ToList();                
+                var clientsDTO = clients.Select(c => new ClientDTO(c)).ToList();
                 return Ok(clientsDTO);
             }
             catch (Exception ex)
@@ -55,98 +58,56 @@ namespace HomeBanking2._0.Controllers
         }
 
 
-        [HttpPost]
-        public IActionResult Post([FromBody] Client client)
-        {
-            try
-            {
-                //validamos datos antes
-                if (String.IsNullOrEmpty(client.Email) || String.IsNullOrEmpty(client.Password) || String.IsNullOrEmpty(client.FirstName) || String.IsNullOrEmpty(client.LastName))
-                    return StatusCode(403, "datos inválidos");
+        
 
-                //buscamos si ya existe el usuario
-                Client user = _clientRepository.FindByEmail(client.Email);
-
-                if (user != null)
-                {
-                    return StatusCode(403, "Email está en uso");
-                }
-
-                Client newClient = new Client
-                {
-                    Email = client.Email,
-                    Password = client.Password,
-                    FirstName = client.FirstName,
-                    LastName = client.LastName,
-                };
-
-                _clientRepository.Save(newClient);
-                return Created("", newClient);
-
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, ex.Message);
-            }
-        }
 
         [HttpGet("current")]
-        public IActionResult GetCurrent()
+        [Authorize(Policy = "ClientOnly")]
+        public IActionResult GetCurrentClient()
         {
             try
             {
-                string email = User.FindFirst("Client") != null ? User.FindFirst("Client").Value : string.Empty;
-                if (email == string.Empty)
-                {
-                    return Forbid();
-                }
-
+                string email = User.FindFirst("Client") != null ? User.FindFirst("Client").Value : null;
+                if (email.IsNullOrEmpty())
+                    return StatusCode(403, "Usuario no encontrado");
                 Client client = _clientRepository.FindByEmail(email);
-
                 if (client == null)
-                {
-                    return Forbid();
-                }
-
-                var clientDTO = new ClientDTO
-                {
-                    Id = client.Id,
-                    Email = client.Email,
-                    FirstName = client.FirstName,
-                    LastName = client.LastName,
-                    Accounts = client.Accounts.Select(ac => new AccountDTO
-                    {
-                        Id = ac.Id,
-                        Balance = ac.Balance,
-                        CreationDate = ac.CreationDate,
-                        Number = ac.Number
-                    }).ToList(),
-                    Loans = client.ClientLoans.Select(cl => new ClientLoanDTO
-                    {
-                        Id = cl.Id,
-                        LoanId = cl.LoanId,
-                        Name = cl.Loan.Name,
-                        Amount = cl.Amount,
-                        Payments = int.Parse(cl.Payments)
-                    }).ToList(),
-                    Cards = client.Cards.Select(c => new CardDTO
-                    {
-                        Id = c.Id,
-                        CardHolder = c.CardHolder,
-                        Color = c.Color,
-                        Cvv = c.Cvv,
-                        FromDate = c.FromDate,
-                        Number = c.Number,
-                        ThruDate = c.ThruDate,
-                        Type = c.Type
-                    }).ToList()
-                };
-
-                return Ok(clientDTO);
+                    return StatusCode(403, "Usuario no encontrado");
+                return Ok(new ClientDTO(client));
             }
             catch (Exception ex)
             {
                 return StatusCode(500, ex.Message);
+            }
+
+        }
+
+        [HttpPost]
+        public IActionResult NewClient([FromBody]NewClientDTO newClientDTO)
+        {
+            try
+            {
+                if (newClientDTO.FirstName.IsNullOrEmpty() || newClientDTO.LastName.IsNullOrEmpty() || newClientDTO.Email.IsNullOrEmpty() || newClientDTO.Password.IsNullOrEmpty())
+                    return StatusCode(StatusCodes.Status400BadRequest, "Información no encontrada");
+                Client client = _clientRepository.FindByEmail(newClientDTO.Email);
+                if (client != null)
+                    return StatusCode(StatusCodes.Status400BadRequest, "El email ya fue utilizado");
+                Client newClient = new Client
+                {
+                    FirstName = newClientDTO.FirstName,
+                    LastName = newClientDTO.LastName,
+                    Email = newClientDTO.Email,
+                    Password = newClientDTO.Password,
+
+                }; //guardar el nuevo cliente en la base de datos
+
+                _clientRepository.Save(newClient);
+                return StatusCode(201, new ClientDTO(newClientDTO));
+
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
             }
         }
 

@@ -12,6 +12,13 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+builder.Services.AddControllers()
+    .AddJsonOptions(options =>
+    {
+        options.JsonSerializerOptions.IncludeFields = true;
+    });
+
+
 //Add context to the container
 
 builder.Services.AddDbContext<HomeBankingContext>(

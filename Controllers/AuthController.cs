@@ -26,28 +26,38 @@ namespace HomeBankingMindHub.Controllers
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] ClientLoginDTO loginDTO)
         {
+            //creamos la identidad
+
             try
             {
                 Client user = _clientRepository.FindByEmail(loginDTO.Email);
                 if (user == null)
 
-                    return StatusCode(403, "Información Inválida");
+                    return StatusCode(403, "Usuario no encontrado");
                 if (!user.Password.Equals(loginDTO.Password))
                     return StatusCode(403, "Credenciales Inválidas");
 
+                //creamos los claims si lo anterior está ok, tomamos la info de using System.Security.Claims;
+
                 var claims = new List<Claim>
                 {
-                    new Claim("Client", user.Email),
-                };
+                    new Claim("Client", user.Email)
+                };                
+
+                //creamos la identidad de esta claim
 
                 var claimsIdentity = new ClaimsIdentity(
                     claims,
+
+                    //le pedimos que utilice esto que viene del program
+
                     CookieAuthenticationDefaults.AuthenticationScheme
                 );
+                //retornamos la cookie al navegador
 
                 await HttpContext.SignInAsync(
                     CookieAuthenticationDefaults.AuthenticationScheme,
-                    new ClaimsPrincipal(claimsIdentity)
+                    new ClaimsPrincipal(claimsIdentity) //las claims son info extra que podes agregar dentro de una cookie
                 );
                 return Ok(loginDTO);
 
@@ -58,39 +68,7 @@ namespace HomeBankingMindHub.Controllers
             }
         }
 
-        [HttpGet("current")]
-        [Authorize(Policy = "ClientOnly")]
-        public IActionResult GetCurrentClient()
-        {
-            try
-            {
-                string email = User.FindFirst("Client") != null ? User.FindFirst("Client").Value : null;
-                if (email.IsNullOrEmpty())
-                    return StatusCode(403, "Usuario no encontrado");
-                Client client = _clientRepository.FindByEmail(email);
-                if (client == null)
-                    return StatusCode(403, "Usuario no encontrado");
-                return Ok(new ClientDTO(client));
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, ex.Message);
-            }
-
-        }
-
-        [HttpPost]
-
-        public IActionResult NewClient([FromBody] NewClientDTO newClientDTO)
-        {
-            try
-            {
-                if (newClientDTO.FirstName.IsNullOrEmpty() || newClientDTO.LastName.IsNullOrEmpty || newClientDTO)
-                    return StatusCode(StatusCodes.Status400BadRequest, "No se encontró");
-                Client client = _clientRepository
-            }
-
-        }
+       
 
 
         [HttpPost("logout")]
