@@ -80,6 +80,8 @@ else
 }
 
 
+app.UseDefaultFiles();
+
 app.UseStaticFiles();
 
 app.UseRouting();
@@ -92,5 +94,7 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapRazorPages();
+
+app.MapDefaultControllerRoute();
 
 app.Run();

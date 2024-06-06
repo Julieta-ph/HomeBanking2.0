@@ -1,15 +1,18 @@
-﻿using Microsoft.AspNetCore.Authentication.Cookies;
+﻿using HomeBanking2._0.Repositories;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System.Collections.Generic;
+using System.Numerics;
 using System.Security.Claims;
+using System.Threading.Tasks;
+using System;
 using HomeBanking2._0.Models;
-using HomeBanking2._0.Repositories;
 using HomeBanking2._0.DTOs;
-using HomeBanking2._0.Repositories.Implementations;
-using Microsoft.IdentityModel.Tokens;
-using Microsoft.AspNetCore.Authorization;
 
-namespace HomeBankingMindHub.Controllers
+
+namespace HomeBanking2._0.Controllers
 {
     [Route("api/auth")]
     [ApiController]
@@ -24,17 +27,17 @@ namespace HomeBankingMindHub.Controllers
         }
 
         [HttpPost("login")]
-        public async Task<IActionResult> Login([FromBody] ClientLoginDTO loginDTO)
+        public async Task<IActionResult> Login([FromBody] ClientLoginDTO clientlogin)
         {
             //creamos la identidad
 
             try
             {
-                Client user = _clientRepository.FindByEmail(loginDTO.Email);
+                Client user = _clientRepository.FindByEmail(clientlogin.Email);
                 if (user == null)
 
                     return StatusCode(403, "Usuario no encontrado");
-                if (!user.Password.Equals(loginDTO.Password))
+                if (!user.Password.Equals(clientlogin.Password))
                     return StatusCode(403, "Credenciales Inválidas");
 
                 //creamos los claims si lo anterior está ok, tomamos la info de using System.Security.Claims;
@@ -59,7 +62,7 @@ namespace HomeBankingMindHub.Controllers
                     CookieAuthenticationDefaults.AuthenticationScheme,
                     new ClaimsPrincipal(claimsIdentity) //las claims son info extra que podes agregar dentro de una cookie
                 );
-                return Ok(loginDTO);
+                return Ok(clientlogin);
 
             }
             catch (Exception ex)

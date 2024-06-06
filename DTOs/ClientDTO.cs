@@ -4,7 +4,7 @@ using System.Text.Json;
 
 namespace HomeBanking2._0.DTOs
 {
-    public class ClientDTO
+    public class ClientDTO 
     {
         
 
@@ -20,18 +20,23 @@ namespace HomeBanking2._0.DTOs
 
         public ICollection<CardDTO> Cards { get; set; }
 
-        
+        public ICollection<ClientLoginDTO> Logins { get; set; }
 
-        public ClientDTO(Client client)
+        public ICollection<NewClientDTO> Clients { get; set; }
+
+        public ClientDTO(){}
+
+        public ClientDTO(Client clientDTO)
         {
-            Id = client.Id;
-            LastName = client.LastName;
-            FirstName = client.FirstName;
-            Email = client.Email; 
-            Password = client.Password;
-            Accounts = client.Accounts.Select(a => new AccountDTO(a)).ToList();
-            Loans = client.ClientLoans.Select(a => new ClientLoanDTO(a)).ToList();
-            Cards = client.Cards.Select(a => new CardDTO(a)).ToList();
+            Id = clientDTO.Id;
+            LastName = clientDTO.LastName;
+            FirstName = clientDTO.FirstName;
+            Email = clientDTO.Email; 
+            Password = clientDTO.Password;
+            Accounts = clientDTO.Accounts.Select(a => new AccountDTO(a)).ToList();
+            Loans = clientDTO.ClientLoans.Select(l => new ClientLoanDTO(l)).ToList();
+            Cards = clientDTO.Cards.Select(c => new CardDTO(c)).ToList();
+            Logins = clientDTO.ClientLogins.Select(li => new ClientLoginDTO(li)).ToList();
             
         }
 

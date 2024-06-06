@@ -24,6 +24,8 @@ namespace HomeBanking2._0.Models
 
         public DbSet<Card> Cards { get; set; }
 
+        public DbSet<ClientLogin> ClientLogins { get; set; }
+
 
     }
 }

@@ -16,7 +16,9 @@
 
         public ICollection<ClientLogin> ClientLogins { get; set; }
 
-        
+
+
+
 
     }
 }

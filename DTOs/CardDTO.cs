@@ -13,6 +13,8 @@ namespace HomeBanking2._0.DTOs
         public DateTime? FromDate { get; set; }
         public DateTime? ThruDate { get; set; }
 
+        public CardDTO() { }
+
         public CardDTO(Card Card)
         {
             Id = Card.Id;

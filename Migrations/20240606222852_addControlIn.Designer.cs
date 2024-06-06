@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace HomeBanking2._0.Migrations
 {
     [DbContext(typeof(HomeBankingContext))]
-    [Migration("20240603204921_InitialCreate")]
-    partial class InitialCreate
+    [Migration("20240606222852_addControlIn")]
+    partial class addControlIn
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -159,12 +159,6 @@ namespace HomeBanking2._0.Migrations
                     b.Property<string>("Email")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("FirstName")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("LastName")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<string>("Password")
                         .HasColumnType("nvarchar(max)");
 
@@ -172,7 +166,7 @@ namespace HomeBanking2._0.Migrations
 
                     b.HasIndex("ClientId");
 
-                    b.ToTable("ClientLogin");
+                    b.ToTable("ClientLogins");
                 });
 
             modelBuilder.Entity("HomeBanking2._0.Models.Loan", b =>
