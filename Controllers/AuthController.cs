@@ -44,7 +44,7 @@ namespace HomeBanking2._0.Controllers
 
                 var claims = new List<Claim>
                 {
-                    new Claim("Client", user.Email)
+                    new Claim("Clients", user.Email)
                 };                
 
                 //creamos la identidad de esta claim
