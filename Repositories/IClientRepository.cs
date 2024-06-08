@@ -9,5 +9,7 @@ namespace HomeBanking2._0.Repositories
         Client FindById(long id);
 
         Client FindByEmail(string email);
+
+        
     }
 }

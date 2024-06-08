@@ -13,6 +13,7 @@ namespace HomeBanking2._0.DTOs
 
         public double Balance { get; set; }
 
+
         public AccountDTO() { }
 
         public AccountDTO(Account account)

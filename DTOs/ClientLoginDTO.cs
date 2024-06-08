@@ -10,12 +10,7 @@ namespace HomeBanking2._0.DTOs
         public string Email { get; set; }
         public string Password { get; set; }
 
-        public ClientLoginDTO(ClientLogin clientlogin)
-        {
-           
-            Email = clientlogin.Email;
-            Password = clientlogin.Password;
-        }
+      
     }
 
     

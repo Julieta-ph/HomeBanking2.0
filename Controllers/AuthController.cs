@@ -10,6 +10,8 @@ using System.Threading.Tasks;
 using System;
 using HomeBanking2._0.Models;
 using HomeBanking2._0.DTOs;
+using Microsoft.IdentityModel.Tokens;
+using Microsoft.AspNetCore.Authorization;
 
 
 namespace HomeBanking2._0.Controllers
@@ -27,16 +29,19 @@ namespace HomeBanking2._0.Controllers
         }
 
         [HttpPost("login")]
-        public async Task<IActionResult> Login([FromBody] ClientLoginDTO clientlogin)
+        public async Task<IActionResult> clientlogin([FromBody] ClientLoginDTO clientlogin)
         {
             //creamos la identidad
 
             try
-            {
+            {       //buscamos al cliente utilizando el objeto usuario (user)
+
                 Client user = _clientRepository.FindByEmail(clientlogin.Email);
                 if (user == null)
-
+                {
                     return StatusCode(403, "Usuario no encontrado");
+                }
+
                 if (!user.Password.Equals(clientlogin.Password))
                     return StatusCode(403, "Credenciales Inválidas");
 
@@ -44,8 +49,8 @@ namespace HomeBanking2._0.Controllers
 
                 var claims = new List<Claim>
                 {
-                    new Claim("Clients", user.Email)
-                };                
+                    new Claim("Client", user.Email)
+                };
 
                 //creamos la identidad de esta claim
 
@@ -71,22 +76,28 @@ namespace HomeBanking2._0.Controllers
             }
         }
 
-       
 
+        
 
         [HttpPost("logout")]
+
         public async Task<IActionResult> Logout()
         {
             try
             {
                 await HttpContext.SignOutAsync(
-                CookieAuthenticationDefaults.AuthenticationScheme);
+                       CookieAuthenticationDefaults.AuthenticationScheme);
                 return Ok();
             }
             catch (Exception ex)
             {
-                return StatusCode(500, ex.Message);
+                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
             }
+
+
         }
+
     }
+
 }
+
