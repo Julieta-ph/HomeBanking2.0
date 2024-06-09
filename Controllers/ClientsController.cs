@@ -109,7 +109,6 @@ namespace HomeBanking2._0.Controllers
 
 
         [HttpGet("{id}")]
-
         public IActionResult GetClientById(long id)
         {
             try
@@ -174,7 +173,6 @@ namespace HomeBanking2._0.Controllers
         }
 
         [HttpPost]
-
         public IActionResult Post([FromBody] NewClientDTO newClientDTO)
         {
             try
@@ -215,7 +213,7 @@ namespace HomeBanking2._0.Controllers
 
                 //Creamos Id
 
-                long newId = _clientService.SaveAndReturnIdClient(newClient);
+                long newIdCreated = _clientService.SaveAndReturnIdClient(newClient);
 
                 // utilizamos servicios para el metodo
 
@@ -224,7 +222,7 @@ namespace HomeBanking2._0.Controllers
                     Number = _accountService.GetRandomAccountNumber().ToString(),
                     Balance = 0,
                     CreationDate = DateTime.Now,
-                    ClientId = newId
+                    ClientId = newIdCreated
                 };
 
                 _accountService.SaveAccount(accountCreate);
@@ -243,9 +241,7 @@ namespace HomeBanking2._0.Controllers
 
         [HttpPost("current/accounts")]
         [Authorize(Policy = "ClientOnly")]
-
         //creo cuenta con el cliente autenticado
-
         public IActionResult CreateAccountToClientAuthenticated()
         {
             try
