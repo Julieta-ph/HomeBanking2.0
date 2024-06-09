@@ -23,13 +23,43 @@ namespace HomeBanking2._0.Repositories.Implementations
                 .ToList();
         }
 
-        public void Save(Account account)
+        public IEnumerable<Account> GetAccountsByClient(long clientId)
+        {
+            return FindByCondition(account => account.ClientId == clientId)
+
+            .Include(account => account.Transactions)
+            .ToList();
+
+        }
+
+        public Account GetAccountById(long id)
+        {
+            return FindByCondition(account => account.Id == id)
+                .Include(account => account.Transactions)
+                .FirstOrDefault();
+        }
+
+        public Account GetAccountByNumber(string numberAccount)
+        {
+            return FindByCondition(account => account.Number == numberAccount)
+                .Include(account => account.Transactions)
+                .FirstOrDefault();
+        }
+
+        public IEnumerable<Account> GetAllAccountsByClient(long clientId)
+        {
+            return FindByCondition(a => a.ClientId == clientId)
+                .Include(a => a.Transactions)
+                .ToList();
+
+        }
+     
+
+        public void SaveAccount(Account account)
         {
             Create(account);
             SaveChanges();
         }
-
-        
     }
     
     
