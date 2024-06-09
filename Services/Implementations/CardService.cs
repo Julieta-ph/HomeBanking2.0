@@ -31,23 +31,52 @@ namespace HomeBanking2._0.Services.Implementations
 
         public string GenerateNumberCard(long clientId)
         {
-            var numberCardRandom = "";
+            // agregamos un numero fijo en el primer bloque de 4 numeros, es el nro de banco
+
+            const string prefixBank = "1009-"; 
+            var numberCardRandom = prefixBank;
+
+
+            /*
+            string prefixType;
+
+            switch (type)
+            {
+                case type.DEBIT:
+                    prefixType = "5022";
+                break;
+
+                case type.CREDIT:
+                    prefixType = "5028";
+                break;
+
+            }
+            */
+
+            //var numberCardRandom = "";
+
             do
             {
-                for (int i = 0; i < 4; i++)
+
+                for (int i = 1; i < 4; i++)
                 {
                     numberCardRandom += RandomNumberGenerator.GetInt32(1000, 9999);
-                    if (1 < 3)
+
+                 
+
+                    if (i < 3)  // le sacamos el guion al ultimo bloque
+
                     {
                         numberCardRandom += "-";
                     }
+
                 }
 
-                //buscar como agregar que le primer bloque de 4 sea el mismo para nombrar el banco
+                //buscar como agregar que le primer bloque de 4 sea el mismo para nombrar el banco - LISTO!
 
                 // el segundo bloque sea el mismo para credito o debito 
 
-                // sacar el guion del ultimo bloque
+                // sacar el guion del ultimo bloque - LISTO!
 
 
             } while (_cardRepository.GetCardByNumber(clientId, numberCardRandom) != null);
