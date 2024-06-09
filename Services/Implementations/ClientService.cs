@@ -49,8 +49,8 @@ namespace HomeBanking2._0.Services.Implementations
             try
             {
                 _clientRepository.Save(client);
-                Client newClientSave = _clientRepository.FindByEmail(client.Email);
-                return newClientSave.Id;
+                Client newClientSaved = _clientRepository.FindByEmail(client.Email);
+                return newClientSaved.Id;
 
             }
             catch (Exception)

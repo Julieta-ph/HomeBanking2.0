@@ -228,7 +228,7 @@ namespace HomeBanking2._0.Controllers
                 _accountService.SaveAccount(accountCreate);
 
 
-                return Created("Usuario creado", newClient);
+                return Ok();
 
             }
             catch (Exception ex)
