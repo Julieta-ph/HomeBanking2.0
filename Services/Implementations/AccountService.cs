@@ -16,7 +16,7 @@ namespace HomeBanking2._0.Services.Implementations
         }
 
         
-        public IEnumerable<Account> GetAllAccountsByClients(long clientId)
+        public IEnumerable<Account> GetAllAccountsByCliente(long clientId)
         {
             try
             {
@@ -29,7 +29,7 @@ namespace HomeBanking2._0.Services.Implementations
             }
         }
 
-        public IEnumerable<Account> GetAllAccountsByClients()
+        public IEnumerable<Account> GetAllAccountsByClient()
         {
             throw new NotImplementedException();
         }

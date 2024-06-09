@@ -42,6 +42,14 @@ namespace HomeBanking2._0.Services.Implementations
                         numberCardRandom += "-";
                     }
                 }
+
+                //buscar como agregar que le primer bloque de 4 sea el mismo para nombrar el banco
+
+                // el segundo bloque sea el mismo para credito o debito 
+
+                // sacar el guion del ultimo bloque
+
+
             } while (_cardRepository.GetCardByNumber(clientId, numberCardRandom) != null);
 
             return numberCardRandom;
