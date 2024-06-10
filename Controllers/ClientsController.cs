@@ -44,9 +44,9 @@ namespace HomeBanking2._0.Controllers
         public ClientsController(
                 IClientRepository clientRepository,
                 IAccountRepository accountRepository,
-                ICardService cardService
+                ICardRepository cardRepository
             
-        )
+        );
         
         */
 
@@ -88,6 +88,7 @@ namespace HomeBanking2._0.Controllers
 
 
         [HttpGet]
+        [Authorize(Policy = "AdminOnly")]
         public IActionResult GetAllClients()
         {
             try
@@ -96,8 +97,7 @@ namespace HomeBanking2._0.Controllers
                 var clients = _clientRepository.GetAllClients();
                 */
 
-                var clients = _clientService.GetAllClients();
-                var clientsDTO = clients.Select(c => new ClientDTO(c)).ToList();
+                var clientsDTO = _clientService.GetAllClients();
                 return Ok(clientsDTO);
             }
             catch (Exception ex)
@@ -118,10 +118,8 @@ namespace HomeBanking2._0.Controllers
                 var client = _clientRepository.FindById(id);
                 */
 
-                var clientById = _clientService.GetClientById(id);
-
-                var clientByIdDTO = new ClientDTO(clientById);
-                return Ok(clientByIdDTO);
+                var clientByIddto = _clientService.GetClientById(id);
+                return Ok();
             }
             catch (Exception ex)
             {
@@ -160,8 +158,8 @@ namespace HomeBanking2._0.Controllers
             {
 
                 Client clientCurrent = GetCurrentClient();
-                var clientDTO = new ClientDTO(clientCurrent);
-                return Ok(clientDTO);
+               
+                return Ok();
             }
             catch (Exception ex)
             {
@@ -179,18 +177,7 @@ namespace HomeBanking2._0.Controllers
         {
             try
             {
-                /*
-                if (clientDTO.FirstName.IsNullOrEmpty() || clientDTO.LastName.IsNullOrEmpty() || clientDTO.Email.IsNullOrEmpty() || clientDTO.Password.IsNullOrEmpty())
-                    return StatusCode(StatusCodes.Status400BadRequest, "Datos inválidos");
 
-                Client client = _clientRepository.FindByEmail(clientDTO.Email);
-
-                if (client != null)
-                {
-                    return StatusCode(StatusCodes.Status400BadRequest, "El email indicado está en uso");
-                */
-
-                // Validamos que no exista el usuario en la BD
 
                 Client client = _clientService.GetClientByEmail(newClientDTO.Email);
                 if (client != null)
@@ -198,44 +185,23 @@ namespace HomeBanking2._0.Controllers
                     return StatusCode(403, "El email ya está en uso");
                 }
 
-                // Si no existe, lo creamos
+                //GUARDO CLIENTE Y RETORNO ID
 
-                Client newClient = new Client
-                {
+                Client ClientCreated = _clientService.Save(newClientDTO);
 
-                    FirstName = newClientDTO.FirstName,
-                    LastName = newClientDTO.LastName,
-                    Email = newClientDTO.Email,
-                    Password = newClientDTO.Password,
-                };
+                //crear cuenta usando service
 
-                /*
-                _clientRepository.Save(newClientDTO); //CAMBIAR POR SERVICIO
-                */
+                _accountService.SaveAccount(ClientCreated.Id);
+                ClientDTO ClientDto = new ClientDTO(ClientCreated);
 
-                //Creamos Id
+                return Ok();
 
-                long newId = _clientService.SaveAndReturnIdClient(newClient);
-
-                // utilizamos servicios para el metodo
-
-                Account accountCreate = new Account
-                {
-                    Number = _accountService.GetRandomAccountNumber().ToString(),
-                    Balance = 0,
-                    CreationDate = DateTime.Now,
-                    ClientId = newId
-                };
-
-                _accountService.SaveAccount(accountCreate);
-
-
-                return Created("Usuario creado", newClient);
 
             }
             catch (Exception ex)
             {
-                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+
+                return StatusCode(500, ex.Message);
             }
         }
 
@@ -257,22 +223,15 @@ namespace HomeBanking2._0.Controllers
                 Account accountCreate = null;
                 if (_accountService.GetCountAccountsByClient(clientCurrent.Id) < 3)
                 {
-                    accountCreate = new Account
-                    {
-                        Number = _accountService.GetRandomAccountNumber().ToString(),
-                        Balance = 0,
-                        CreationDate = DateTime.Now,
-                        ClientId = clientCurrent.Id,
-
-                    };
-
+                    Account accountCreated = _accountService.SaveAccount(clientCurrent.Id);
+                    return StatusCode(201, "La cuenta se creó correctamente");
                 }
                 else
                 {
                     return StatusCode(403, "No es posible tener más de 3 cuentas");
                 }
-                _accountService.SaveAccount(accountCreate);
-                return StatusCode(201, "La cuenta se creó correctamente");
+               
+                
 
             }
             catch (Exception ex)

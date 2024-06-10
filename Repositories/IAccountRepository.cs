@@ -1,4 +1,5 @@
 ﻿using HomeBanking2._0.Models;
+using System.Collections.Generic;
 using System.Diagnostics.Eventing.Reader;
 
 namespace HomeBanking2._0.Repositories
@@ -16,6 +17,8 @@ namespace HomeBanking2._0.Repositories
         Account GetAccountByNumber(string numberAccount);
 
         IEnumerable<Account> GetAllAccountsByClient(long clientId);
+
+        Account FindByNumber(string numberAccount);
         
 
     }

@@ -1,6 +1,8 @@
 ﻿using HomeBanking2._0.DTOs;
 using HomeBanking2._0.Repositories;
 using HomeBanking2._0.Repositories.Implementations;
+using HomeBanking2._0.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -13,24 +15,25 @@ namespace HomeBanking2._0.Controllers
     {
         //responde la solicitud http de los clientes, que pueden ser web por ejemplo
 
-        private readonly IAccountRepository _accountRepository;
+        private readonly IAccountService _accountService;
 
-        public AccountsController(IAccountRepository accountRepository)
+        public AccountsController(IAccountService accountService)
         {
-            _accountRepository = accountRepository;
+            _accountService = accountService;
 
         }
 
         // GET: api/Accounts
 
         [HttpGet]
-        public ActionResult<IEnumerable<AccountDTO>> GetAccounts()
+        [Authorize(Policy = "AdminOnly")]
+        public ActionResult GetAllAccounts()
         {
 
 
             try
             {
-                var accounts = _accountRepository.GetAllAccounts();
+                var accounts = _accountService.GetAllAccounts();
                 var accountsDTO = accounts.Select(a => new AccountDTO(a)).ToList();
                 return Ok(accountsDTO);
             }
@@ -40,14 +43,16 @@ namespace HomeBanking2._0.Controllers
             }
         }
 
-        [HttpGet("{id}")]
 
-        public IActionResult GetAccountById(long id)
+
+        [HttpGet("{id}")]
+        [Authorize(Policy = "ClientOnly")]
+        public IActionResult GetAccount(long id)
 
         {
             try
             {
-                var account = _accountRepository.FindById(id);
+                var account = _accountService.GetAccountById(id);
                 var accountDTO = new AccountDTO(account);
                 return Ok(accountDTO);
             }

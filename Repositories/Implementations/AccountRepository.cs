@@ -1,5 +1,6 @@
 ﻿using HomeBanking2._0.Models;
 using Microsoft.EntityFrameworkCore;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace HomeBanking2._0.Repositories.Implementations
 {
@@ -57,8 +58,25 @@ namespace HomeBanking2._0.Repositories.Implementations
 
         public void SaveAccount(Account account)
         {
-            Create(account);
+            if (account.Id == 0)
+            {
+                Create(account);
+            }
+            else
+            {
+                Update(account);
+            }
+
             SaveChanges();
+
+            RepositoryContext.ChangeTracker.Clear();
+        }
+
+        public Account FindByNumber(string numberAccount)
+        {
+            return FindByCondition(account => account.Number.ToUpper() == numberAccount.ToUpper())
+             .Include(account => account.Transactions)
+             .FirstOrDefault();
         }
     }
     

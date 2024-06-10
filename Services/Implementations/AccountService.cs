@@ -1,6 +1,9 @@
-﻿using HomeBanking2._0.Models;
+﻿using HomeBanking2._0.DTOs;
+using HomeBanking2._0.Models;
 using HomeBanking2._0.Repositories;
 using HomeBanking2._0.Repositories.Implementations;
+using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.BlazorIdentity.Pages.Manage;
+using System.Linq.Expressions;
 using System.Security.Cryptography;
 
 namespace HomeBanking2._0.Services.Implementations
@@ -15,24 +18,6 @@ namespace HomeBanking2._0.Services.Implementations
             _accountRepository = accountRepository;
         }
 
-        
-        public IEnumerable<Account> GetAllAccountsByCliente(long clientId)
-        {
-            try
-            {
-                return _accountRepository.GetAccountsByClient(clientId);
-
-            }
-            catch (Exception)
-            {
-                throw new Exception("No se pudieron obtener todas las cuentas del cliente");
-            }
-        }
-
-        public IEnumerable<Account> GetAllAccountsByClient()
-        {
-            throw new NotImplementedException();
-        }
 
         public int GetCountAccountsByClient(long clientId)
         {
@@ -53,6 +38,7 @@ namespace HomeBanking2._0.Services.Implementations
 
         }
 
+        /*
         public void SaveAccount(Account account)
         {
             try
@@ -65,6 +51,93 @@ namespace HomeBanking2._0.Services.Implementations
 
             }
         
+        }
+
+        */
+
+        public Account GetAccountById(long id)
+        {
+            try
+            {
+                return _accountRepository.GetAccountById(id);
+            }
+            catch (Exception)
+            {
+                throw new Exception("No se pudo obtener la cuenta a través del id");
+
+            }
+        }
+
+
+        public IEnumerable<Account> GetAllAccountsByCliente(long clientId)
+        {
+            try
+            {
+                return _accountRepository.GetAccountsByClient(clientId);
+            }
+            catch (Exception)
+            {
+                throw new Exception("No se pudieron obtener las cuentas");
+            }
+        }
+
+        public Account GetAccountByNumber(string numberAccount)
+        {
+            try
+            {
+                return _accountRepository.GetAccountByNumber(numberAccount);
+            }
+            catch (Exception)
+            {
+                throw new Exception("No se pudo obtener la cuenta");
+
+            }
+        }
+
+        public Account SaveAccount(long newIdCreated)
+        {
+            try
+            {
+                Account account = new Account
+                {
+                    Number = GetRandomAccountNumber().ToString(),
+                    Balance = 0,
+                    CreationDate = DateTime.Now,
+                    ClientId = newIdCreated
+                };
+
+                _accountRepository.SaveAccount(account);
+
+                return _accountRepository.GetAccountByNumber(account.Number);
+            }
+            catch (Exception) 
+            {
+                throw new Exception("No fue posible guardar la cuenta");
+            }
+        }
+
+        public void UpdateAccount(Account account)
+        {
+            try
+            {
+                _accountRepository.SaveAccount(account);
+            }
+            catch (Exception)
+            {
+                throw new Exception("No fue posible modificar la cuenta");
+            }
+        }
+
+        public IEnumerable<Account> GetAllAccounts()
+        {
+            try
+            {
+                return _accountRepository.GetAllAccounts();
+            }
+            catch (Exception)
+            {
+                throw new Exception("No se pudieron traer todas las cuentas");
+            }
         }
     }
 }

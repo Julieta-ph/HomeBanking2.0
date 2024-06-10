@@ -1,4 +1,5 @@
-﻿using HomeBanking2._0.Models;
+﻿using HomeBanking2._0.DTOs;
+using HomeBanking2._0.Models;
 
 namespace HomeBanking2._0.Services
 {
@@ -7,13 +8,21 @@ namespace HomeBanking2._0.Services
 
     public interface IAccountService
     {
-        string GetRandomAccountNumber();
+        string GetRandomAccountNumber(); 
 
-        int GetCountAccountsByClient(long clientId);
+        int GetCountAccountsByClient(long clientId); 
 
-        void SaveAccount(Account account);
+        Account SaveAccount(long newIdCreated);
 
-        IEnumerable<Account> GetAllAccountsByCliente(long clientId);
+        Account GetAccountByNumber(string numberAccount);
+        
+        void UpdateAccount(Account account); 
+
+        IEnumerable<Account> GetAllAccountsByCliente(long clientId); 
+
+        IEnumerable<Account> GetAllAccounts();
+
+        Account GetAccountById(long id);
 
     }
 }
