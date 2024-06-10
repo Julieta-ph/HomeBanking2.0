@@ -12,7 +12,7 @@ using System.Linq.Expressions;
 
 namespace HomeBanking2._0.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/clients")]
     [ApiController]
 
     public class ClientsController : ControllerBase

@@ -1,5 +1,6 @@
 ﻿using HomeBanking2._0.DTOs;
 using HomeBanking2._0.Models;
+using Microsoft.EntityFrameworkCore.Diagnostics;
 
 namespace HomeBanking2._0.Services
 {
@@ -24,5 +25,6 @@ namespace HomeBanking2._0.Services
 
         Account GetAccountById(long id);
 
+        
     }
 }

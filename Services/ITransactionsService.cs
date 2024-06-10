@@ -1,5 +1,6 @@
 ﻿using HomeBanking2._0.DTOs;
 using HomeBanking2._0.Models;
+using HomeBanking2._0.Repositories;
 
 namespace HomeBanking2._0.Services
 {
@@ -11,11 +12,11 @@ namespace HomeBanking2._0.Services
 
         int SaveTransaction(Transaction transaction);
 
-        TransferReturnDTO CreateTransaction(TransferDTO transferDTO, long id);
-
-       
-
         
+
+
+
+
 
     }
 }

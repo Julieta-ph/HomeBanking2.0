@@ -17,7 +17,7 @@ namespace HomeBanking2._0.DTOs
         public TransactionDTO(Transaction transaction)
         {
             Id = transaction.Id;
-            Type = transaction.Type;
+            Type = transaction.Type.ToString();
             Amount = transaction.Amount;
             Description = transaction.Description;
             Date = transaction.Date;

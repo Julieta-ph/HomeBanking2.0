@@ -9,7 +9,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace HomeBanking2._0.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/accounts")]
     [ApiController]
     public class AccountsController : ControllerBase
     {
