@@ -61,7 +61,7 @@ namespace HomeBanking2._0.Controllers
 
 
         [HttpGet("{id}")]
-        [Authorize(Policy = "ClientOnly")]
+        //[Authorize(Policy = "ClientOnly")]
         public IActionResult GetAccount(long id)
 
         {

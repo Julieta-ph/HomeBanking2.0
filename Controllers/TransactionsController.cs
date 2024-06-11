@@ -147,7 +147,7 @@ namespace HomeBanking2._0.Controllers
                     _accountRepository.UpdateAccount(toAccount);
 
 
-                        return Created("La operación fue realizada con éxito", fromAccount);
+                        return Ok();
 
                      }
                     catch (Exception ex)
