@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore.Query;
+﻿using HomeBanking2._0.Models;
+using Microsoft.EntityFrameworkCore.Query;
 using System.Linq.Expressions;
 
 namespace HomeBanking2._0.Repositories
@@ -13,6 +14,6 @@ namespace HomeBanking2._0.Repositories
         void Delete(T entity);
         void SaveChanges();
 
-
+        
     }
 }

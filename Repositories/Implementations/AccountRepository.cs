@@ -56,27 +56,26 @@ namespace HomeBanking2._0.Repositories.Implementations
         }
      
 
-        public void SaveAccount(Account account)
-        {
-            if (account.Id == 0)
-            {
-                Create(account);
-            }
-            else
-            {
-                Update(account);
-            }
-
-            SaveChanges();
-
-            RepositoryContext.ChangeTracker.Clear();
-        }
+       
 
         public Account FindByNumber(string numberAccount)
         {
             return FindByCondition(account => account.Number.ToUpper() == numberAccount.ToUpper())
              .Include(account => account.Transactions)
              .FirstOrDefault();
+        }
+
+        public void Save(Account account)
+        {
+            Create(account);
+            SaveChanges();
+        }
+
+        public void UpdateAccount(Account account)
+        {
+            Update(account);
+            SaveChanges();
+            RepositoryContext.ChangeTracker.Clear();
         }
     }
     

@@ -7,7 +7,7 @@ namespace HomeBanking2._0.Repositories
     public interface IAccountRepository
     {
         IEnumerable<Account> GetAllAccounts();
-        void SaveAccount(Account account);
+        
         Account FindById(long id);
 
         IEnumerable<Account> GetAccountsByClient(long clientId);
@@ -19,7 +19,10 @@ namespace HomeBanking2._0.Repositories
         IEnumerable<Account> GetAllAccountsByClient(long clientId);
 
         Account FindByNumber(string numberAccount);
-        
+
+        void Save(Account account);
+
+        void UpdateAccount(Account account);
 
     }
 }

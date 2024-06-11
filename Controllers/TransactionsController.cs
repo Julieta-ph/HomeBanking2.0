@@ -2,18 +2,12 @@
 using HomeBanking2._0.Models;
 using HomeBanking2._0.Repositories;
 using HomeBanking2._0.Services;
-using HomeBanking2._0.DTOs;
-using HomeBanking2._0.Models;
-using HomeBanking2._0.Services;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.IdentityModel.Tokens;
-using System.Security.Claims;
-using HomeBanking2._0.Repositories.Implementations;
 
-namespace HomeBanking.Controllers
+
+namespace HomeBanking2._0.Controllers
 {
-    [Route("api/transactions")]
+    [Route("api/[controller]")]
     [ApiController]
     public class TransactionsController : ControllerBase
     {
@@ -21,7 +15,7 @@ namespace HomeBanking.Controllers
         public readonly IAccountService _accountService;
         public readonly ITransactionsService _transactionService;
 
-        public readonly ITransactionRepository _transactionRepository;
+        public readonly IAccountRepository _accountRepository;
 
         //crear constructor con todos los repositorios que voy a usar
         public TransactionsController(
@@ -29,7 +23,7 @@ namespace HomeBanking.Controllers
             IAccountService accountService,
             ITransactionsService transactionService,
             
-            ITransactionRepository transactionRepository
+            IAccountRepository accountRepository
 
          )
         {
@@ -37,43 +31,44 @@ namespace HomeBanking.Controllers
             _accountService = accountService;
             _transactionService = transactionService;
 
-            _transactionRepository = transactionRepository;
+            _accountRepository = accountRepository;
         }
 
         /*
-         * crear endpoint POST que reciba el DTO con 4 parametros 
-         */
-        [HttpPost]
-        [Authorize(Policy = "ClientOnly")]
-        public IActionResult CreateTransactions(TransferDTO transferDTO)
+
+        [HttpGet]
+        public IActionResult getAll()
         {
             try
             {
-                string email = User.FindFirst("Client") != null ? User.FindFirst("Client").Value : string.Empty;
-                if (email == string.Empty)
-                {
-                    return StatusCode(403, "No estas autorizado");
-                }
-
-                Client client = _clientService.GetClientByEmail(email);
-
-                if (client == null)
-                {
-                    return StatusCode(403, "El cliente no se encontro");
-                }
-
-                TransferReturnDTO transferReturnDTO = _transactionService.CreateTransaction(transferDTO, client.Id);
-
-                return Ok(transferReturnDTO);
+                var transactions = _transactionService.GetAllTransactions();
+                return Ok(transactions);
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                return StatusCode(500, e.Message);
+                return StatusCode(500, ex.Message);
             }
         }
 
+        [HttpGet("{id}")]
+        public IActionResult Get(long id)
+        {
+            try
+            {
+                var transactionId = _transactionService.GetTransactionById(id);
+                if (transactionId != null)
+                    return Ok();
+                else
+                    return StatusCode(404, "Transaccion no encontrada");
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
+        }       
 
         /*
+        
             Debe recibir el monto, la descripción, número de cuenta de origen y número de cuenta de destino como parámetros de solicitud
             Verificar que los parámetros no estén vacíos
             
@@ -177,19 +172,20 @@ namespace HomeBanking.Controllers
 
                     fromAccount.Balance = fromAccount.Balance - transferDTO.Amount;
 
-                    _transactionRepository.SaveTransaction(fromAccount);
+                    _accountRepository.UpdateAccount(fromAccount);
 
                     toAccount.Balance = toAccount.Balance + transferDTO.Amount;
 
-                    _transactionRepository.SaveTransaction(toAccount);
+                    _accountRepository.UpdateAccount(toAccount);
 
-                    return Created("La operación fue realizada con éxito", fromAccount);
 
-                }
-                catch (Exception ex)
-                {
-                    return StatusCode(500, ex.Message);
-                }
+                        return Created("La operación fue realizada con éxito", fromAccount);
+
+                     }
+                    catch (Exception ex)
+                    {
+                        return StatusCode(500, ex.Message);
+                    }
             }
 
 

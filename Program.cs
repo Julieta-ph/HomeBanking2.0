@@ -44,12 +44,13 @@ builder.Services.AddScoped<ITransactionRepository, TransactionRepository>();
 builder.Services.AddScoped<ICardRepository, CardRepository>();
 
 
-// Aca registramos todos los sevicios
+// Aca registramos todos los SERVICIOS
 
 
 builder.Services.AddScoped<IAccountService, AccountService>();
 builder.Services.AddScoped<IClientService, ClientService>();
 builder.Services.AddScoped<ICardService, CardService>();
+builder.Services.AddScoped<ITransactionsService, TransactionService>();
 
 //autenticación
 
