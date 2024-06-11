@@ -32,20 +32,17 @@ builder.Services.AddDbContext<HomeBankingContext>(
 
 builder.Services.AddScoped<IClientRepository, ClientRepository>();
 builder.Services.AddScoped<IAccountRepository, AccountRepository>();
-
-
+builder.Services.AddScoped<ITransactionRepository, TransactionRepository>();
+builder.Services.AddScoped<ICardRepository, CardRepository>();
 
 // CREAR REPOS
 
-
-builder.Services.AddScoped<ITransactionRepository, TransactionRepository>();
 //builder.Services.AddScoped<ILoanRepository, LoanRepository>();
 //builder.Services.AddScoped<IClientLoanRepository, ClientLoanRepository>();
-builder.Services.AddScoped<ICardRepository, CardRepository>();
+
 
 
 // Aca registramos todos los SERVICIOS
-
 
 builder.Services.AddScoped<IAccountService, AccountService>();
 builder.Services.AddScoped<IClientService, ClientService>();
@@ -53,7 +50,6 @@ builder.Services.AddScoped<ICardService, CardService>();
 builder.Services.AddScoped<ITransactionsService, TransactionService>();
 
 //autenticación
-
 
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
       .AddCookie(options =>
@@ -110,7 +106,8 @@ app.UseRouting();
 
 app.MapControllers();
 
-//le decimos que use autenticación
+//le decimos que use autenticación y autorización
+
 app.UseAuthentication();
 
 app.UseAuthorization();
