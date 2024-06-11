@@ -2,6 +2,7 @@
 using HomeBanking2._0.Models;
 using HomeBanking2._0.Repositories;
 using HomeBanking2._0.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 
@@ -19,13 +20,14 @@ namespace HomeBanking2._0.Controllers
 
         //crear constructor con todos los repositorios que voy a usar
         public TransactionsController(
+
             IClientService clientService,
             IAccountService accountService,
             ITransactionsService transactionService,
-            
+
             IAccountRepository accountRepository
 
-         )
+        )
         {
             _clientService = clientService;
             _accountService = accountService;
@@ -47,11 +49,48 @@ namespace HomeBanking2._0.Controllers
             
          */
 
-        [HttpPost]
-        public IActionResult Post([FromBody] TransferDTO transferDTO)
+        [HttpGet]
+        public IActionResult GetAll()
         {
             try
             {
+                var transactions = _transactionService.GetAllTransactions();
+                return Ok(transactions);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpGet("{id}")]
+        public IActionResult Get(int id)
+        {
+            {
+                try
+                {
+                    var response = _transactionService.GetTransactionById(id);
+
+                    return Ok(response);
+
+                }
+                catch (Exception ex)
+                {
+
+                    return BadRequest(ex.Message);
+                }
+
+            }
+        }
+
+
+            [HttpPost]
+            [Authorize(Policy = "ClientOnly")]
+            public IActionResult Post([FromBody] TransferDTO transferDTO)
+
+            {
+                try
+                {
                     string email = User.FindFirst("Client") != null ? User.FindFirst("Client").Value : string.Empty;
                     if (email == string.Empty)
                     {
@@ -63,28 +102,28 @@ namespace HomeBanking2._0.Controllers
                         return StatusCode(403, "La cuenta del cliente no existe");
                     }
 
-                // Verificar que los números de cuenta no sean iguales
+                    // Verificar que los números de cuenta no sean iguales
 
                     if (transferDTO.ToAccountNumber == transferDTO.FromAccountNumber)
                     {
                         return StatusCode(403, "El número de cuenta tanto de origen como de destino, no puede ser el mismo");
                     }
 
-                //Verificar que exista la cuenta de origen y destino
+                    //Verificar que exista la cuenta de origen y destino
 
                     if (transferDTO.FromAccountNumber == string.Empty || transferDTO.ToAccountNumber == string.Empty)
                     {
                         return StatusCode(403, "No fue posible localizar la cuenta");
                     }
 
-                        // Verificar que la cuenta de origen tenga el monto disponible.
+                    // Verificar que la cuenta de origen tenga el monto disponible.
 
                     if (transferDTO.Amount <= 0)
                     {
                         return StatusCode(403, "Es necesario tener saldo disponible para realizar una operación");
                     }
 
-                            // Description no puede estar vacio
+                    // Description no puede estar vacio
 
                     if (transferDTO.Description == string.Empty)
                     {
@@ -100,7 +139,7 @@ namespace HomeBanking2._0.Controllers
                         return StatusCode(403, "La cuenta de origen no existe");
                     }
 
-                        // verifico que el monto de la transaccion sea menor o igual al monto de la transferencia
+                    // verifico que el monto de la transaccion sea menor o igual al monto de la transferencia
 
                     if (fromAccount.Balance <= transferDTO.Amount)
                     {
@@ -115,8 +154,8 @@ namespace HomeBanking2._0.Controllers
                         return StatusCode(403, "La cuenta de destino no existe");
                     }
 
-                // Se deben crear dos transacciones, una con el tipo de transacción “DEBIT” asociada a la cuenta de origen y la otra con el tipo de transacción “CREDIT” asociada a la cuenta de destino.
-                // A la cuenta de origen se le restará el monto indicado en la petición y a la cuenta de destino se le sumará el mismo monto.
+                    // Se deben crear dos transacciones, una con el tipo de transacción “DEBIT” asociada a la cuenta de origen y la otra con el tipo de transacción “CREDIT” asociada a la cuenta de destino.
+                    // A la cuenta de origen se le restará el monto indicado en la petición y a la cuenta de destino se le sumará el mismo monto.
 
 
                     _transactionService.SaveTransaction(new Transaction
@@ -147,25 +186,26 @@ namespace HomeBanking2._0.Controllers
                     _accountRepository.UpdateAccount(toAccount);
 
 
-                        return Ok();
+                    return Ok();
 
-                     }
-                    catch (Exception ex)
-                    {
-                        return StatusCode(500, ex.Message);
-                    }
+                }
+                catch (Exception ex)
+                {
+                    return StatusCode(500, ex.Message);
+
+                }
             }
 
 
 
 
-            
+
 
         }
 
-       
-    
 
 
-}
+    }
+
+
 

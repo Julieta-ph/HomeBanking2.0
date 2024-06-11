@@ -118,7 +118,7 @@ namespace HomeBanking2._0.Controllers
                 var client = _clientRepository.FindById(id);
                 */
 
-                var clientByIddto = _clientService.GetClientById(id);
+                var clientByIdDTO = _clientService.GetClientById(id);
                 return Ok();
             }
             catch (Exception ex)
