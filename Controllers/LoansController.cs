@@ -15,8 +15,8 @@ namespace HomeBanking2._0.Controllers
         private readonly IClientRepository _clientRepository;
         private readonly IAccountRepository _accountRepository;
         private readonly ILoanRepository _loanRepository;
-        private readonly ITransactionRepository transactionRepository;
-        private readonly IClientLoanRepository clientLoanRepository;
+        private readonly ITransactionRepository _transactionRepository;
+        private readonly IClientLoanRepository _clientLoanRepository;
 
         public LoansController(
             IAccountRepository accountRepository,
@@ -31,7 +31,7 @@ namespace HomeBanking2._0.Controllers
             _clientRepository = clientRepository;
             _loanRepository = loanRepository;
             _transactionRepository = transactionRepository;
-
+            _clientLoanRepository = clientLoanRepository;
         }
 
         [HttpGet]
@@ -40,7 +40,7 @@ namespace HomeBanking2._0.Controllers
             try
             {
                 var loans = _loanRepository.GetAllLoans();
-                var LoansDTO = new List<ClientLoanDTO>();
+                var ClientLoan = new List<ClientLoanDTO>();
                 foreach (ClientLoan clientloan in loans)
                 {
                     var newLoanDTO = new ClientLoanDTO
@@ -48,14 +48,14 @@ namespace HomeBanking2._0.Controllers
                     {
                         Id = clientloan.Id,
                         LoanId = clientloan.Id,
-                        Name = clientloan.Name,
+                        Name = clientloan.Loan.Name,
                         Amount = clientloan.Amount,
                         Payments = Convert.ToInt32(clientloan.Payments),
                         
                     };
-                    LoansDTO.Add(newLoanDTO);
+                    ClientLoan.Add(newLoanDTO);
                 }
-                return StatusCode(200, ClientLoanDTO);
+                return Ok();
             }
             catch (Exception ex)
             {
@@ -63,6 +63,8 @@ namespace HomeBanking2._0.Controllers
             }
 
         }
+
+        [Http]
         
     }
 }
