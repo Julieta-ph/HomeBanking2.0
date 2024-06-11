@@ -21,7 +21,7 @@ namespace HomeBanking2._0.DTOs
             Number = account.Number;
             CreationDate = account.CreationDate;
             Balance = account.Balance;
-        
+            
         }
 
     }

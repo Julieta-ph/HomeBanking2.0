@@ -54,9 +54,13 @@ namespace HomeBanking2._0.Repositories.Implementations
                 .ToList();
 
         }
-     
 
-       
+        public void SaveAccount(Account account)
+        {
+            Create(account);
+            SaveChanges();
+        }
+
 
         public Account FindByNumber(string numberAccount)
         {

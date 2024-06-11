@@ -17,11 +17,15 @@ namespace HomeBanking2._0.Controllers
     {
         //responde la solicitud http de los clientes, que pueden ser web por ejemplo
 
+        private readonly IAccountRepository _accountRepository;
+
         private readonly IClientService _clientService;
         private readonly IAccountService _accountService;
 
 
         public AccountsController(
+
+            IAccountRepository accountRepository,
 
             IClientService clientService,
             IAccountService accountService
@@ -29,13 +33,15 @@ namespace HomeBanking2._0.Controllers
         )
 
         {
+            _accountRepository = accountRepository;
+
             _accountService = accountService;
             _clientService = clientService;
         }
         // GET: api/Accounts
 
         [HttpGet]
-        [Authorize(Policy = "AdminOnly")]
+        //[Authorize(Policy = "AdminOnly")]
         public ActionResult GetAllAccounts()
         {
 
@@ -86,8 +92,8 @@ namespace HomeBanking2._0.Controllers
             return client;
         }
 
-
         
+
     }
 
 }

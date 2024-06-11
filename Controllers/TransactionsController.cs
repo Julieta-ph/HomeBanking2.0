@@ -34,38 +34,6 @@ namespace HomeBanking2._0.Controllers
             _accountRepository = accountRepository;
         }
 
-        /*
-
-        [HttpGet]
-        public IActionResult getAll()
-        {
-            try
-            {
-                var transactions = _transactionService.GetAllTransactions();
-                return Ok(transactions);
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, ex.Message);
-            }
-        }
-
-        [HttpGet("{id}")]
-        public IActionResult Get(long id)
-        {
-            try
-            {
-                var transactionId = _transactionService.GetTransactionById(id);
-                if (transactionId != null)
-                    return Ok();
-                else
-                    return StatusCode(404, "Transaccion no encontrada");
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, ex.Message);
-            }
-        }       
 
         /*
         

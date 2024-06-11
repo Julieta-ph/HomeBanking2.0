@@ -12,6 +12,8 @@ namespace HomeBanking2._0.Repositories
 
         IEnumerable<Account> GetAccountsByClient(long clientId);
 
+        void SaveAccount(Account account);
+
         Account GetAccountById(long id);
 
         Account GetAccountByNumber(string numberAccount);
