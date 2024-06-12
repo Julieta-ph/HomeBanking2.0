@@ -16,6 +16,5 @@ namespace HomeBanking2._0.DTOs
 
         public long ClientId { get; set; }
 
-        public long AccountId { get; set; }
     }
 }

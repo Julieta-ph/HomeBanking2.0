@@ -12,11 +12,11 @@ namespace HomeBanking2._0.Controllers
     [ApiController]
     public class TransactionsController : ControllerBase
     {
-        public readonly IClientService _clientService;
-        public readonly IAccountService _accountService;
-        public readonly ITransactionsService _transactionService;
+        private readonly IClientService _clientService;
+        private readonly IAccountService _accountService;
+        private readonly ITransactionsService _transactionService;
 
-        public readonly IAccountRepository _accountRepository;
+        private readonly IAccountRepository _accountRepository;
 
         //crear constructor con todos los repositorios que voy a usar
         public TransactionsController(
@@ -49,40 +49,7 @@ namespace HomeBanking2._0.Controllers
             
          */
 
-        [HttpGet]
-        public IActionResult GetAll()
-        {
-            try
-            {
-                var transactions = _transactionService.GetAllTransactions();
-                return Ok(transactions);
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
-        }
-
-        [HttpGet("{id}")]
-        public IActionResult Get(int id)
-        {
-            {
-                try
-                {
-                    var response = _transactionService.GetTransactionById(id);
-
-                    return Ok(response);
-
-                }
-                catch (Exception ex)
-                {
-
-                    return BadRequest(ex.Message);
-                }
-
-            }
-        }
-
+       
 
             [HttpPost]
             [Authorize(Policy = "ClientOnly")]

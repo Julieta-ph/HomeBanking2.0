@@ -1,6 +1,7 @@
 ﻿using HomeBanking2._0.DTOs;
 using HomeBanking2._0.Models;
 using HomeBanking2._0.Repositories;
+using HomeBanking2._0.Services;
 using HomeBanking2._0.Repositories.Implementations;
 using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.BlazorIdentity.Pages.Manage;
 using System.Linq.Expressions;
@@ -13,9 +14,13 @@ namespace HomeBanking2._0.Services.Implementations
         //Implementar los repositorios
 
         private readonly IAccountRepository _accountRepository;
+
+        
         public AccountService(IAccountRepository accountRepository)
         {
             _accountRepository = accountRepository;
+
+            
         }
 
 
@@ -141,5 +146,6 @@ namespace HomeBanking2._0.Services.Implementations
         }
 
         
+
     }
 }

@@ -15,7 +15,7 @@ namespace HomeBanking2._0.DTOs
         public double Balance { get; set; }
 
         public ICollection<TransactionDTO> Transaction { get; set; }
-        public AccountDTO() { }
+
 
         public AccountDTO(Account account)
         {
@@ -23,6 +23,7 @@ namespace HomeBanking2._0.DTOs
             Number = account.Number;
             CreationDate = account.CreationDate;
             Balance = account.Balance;
+            Transaction = account.Transactions.Select(transaction => new TransactionDTO()).ToList();
         }    
     }
 }

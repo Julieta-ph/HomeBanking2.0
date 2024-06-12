@@ -25,5 +25,12 @@ namespace HomeBanking2._0.Repositories.Implementations
             Create(transaction);
             SaveChanges();
         }
+
+        public IQueryable<Transaction> GetTransactionByIdList(long id)
+        {
+            return FindAll()
+                .Where(x => x.Id == id);
+        }
+
     }
 }

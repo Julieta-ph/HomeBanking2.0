@@ -3,6 +3,7 @@ using HomeBanking2._0.Models;
 using HomeBanking2._0.Repositories;
 using HomeBanking2._0.Repositories.Implementations;
 using HomeBanking2._0.Services;
+using HomeBanking2._0.Services.Implementations;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
@@ -17,45 +18,21 @@ namespace HomeBanking2._0.Controllers
 
     public class ClientsController : ControllerBase
     {
-        // implementar repositorios
-        // eliminamos repositorios y lo reemplazamos por servicios
-        //
-
-        /*
-        private readonly IClientRepository _clientRepository;
-        private readonly IAccountRepository _accountRepository;
-        private readonly ICardRepository _cardRepository;
-
-        */
-
-
-
-        //implementar servicios
+        //reemplazamos repositorios por servicios     
+        //implementamos servicios
 
         private readonly IAccountService _accountService;
         private readonly IClientService _clientService;
         private readonly ICardService _cardService;
-
-
-        //reemplazamos repositorios por servicios
-
-        /*
-        
-        public ClientsController(
-                IClientRepository clientRepository,
-                IAccountRepository accountRepository,
-                ICardRepository cardRepository
-            
-        );
-        
-        */
-
+        private readonly ITransactionsService _transactionService;
+          
 
         public ClientsController(
 
             IClientService clientService,
             IAccountService accountService,
-            ICardService cardService
+            ICardService cardService,
+            ITransactionsService transactionService
 
         )
 
@@ -63,61 +40,18 @@ namespace HomeBanking2._0.Controllers
             _cardService = cardService;
             _clientService = clientService;
             _accountService = accountService;
+            _transactionService = transactionService;
         }
 
-        public Client GetCurrentClient()
-        {
-            /*
-                _clientRepository = clientRepository;
-                _accountRepository = accountRepository;
-                _cardRepository = cardRepository;
-
-            */
-
-            string email = User.FindFirst("Client")?.Value ?? string.Empty;
-            if (string.IsNullOrEmpty(email))
-            {
-                throw new Exception("Usuario no encontrado");
-            }
-
-            Client client = _clientService.GetClientByEmail(email);
-
-            return client;
-        }
-
-        
-
-        [HttpGet]
-      //  [Authorize(Policy = "AdminOnly")]
-        public IActionResult GetAllClients()
-        {
-            try
-            {
-                /*
-                var clients = _clientRepository.GetAllClients();
-                */
-
-                var clientsDTO = _clientService.GetAllClients();
-                return Ok(clientsDTO);
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, ex.Message);
-            }
-        }
-
-
+        //TRAEMOS AL CLIENTE LOGUEADO
+                
 
         [HttpGet("{id}")]
 
         public IActionResult GetClientById(long id)
         {
             try
-            {
-                /*
-                var client = _clientRepository.FindById(id);
-                */
-
+            {               
                 var clientByIdDTO = _clientService.GetClientById(id);
                 return Ok();
             }
@@ -125,51 +59,7 @@ namespace HomeBanking2._0.Controllers
             {
                 return StatusCode(500, ex.Message);
             }
-        }
-
-
-        [HttpGet("current")]
-        [Authorize(Policy = "ClientOnly")]
-        public IActionResult GetCurrent()
-        {
-            /*
-             * Reemplazamos por servicios
-            try
-            {
-
-                string email = User.FindFirst("Client") != null ? User.FindFirst("Client").Value : null;
-                if (email.IsNullOrEmpty())
-                    return StatusCode(403, "Usuario no encontrado");
-
-                Client client = _clientRepository.FindByEmail(email);
-                if (client == null)
-                    return StatusCode(403, "Usuario no encontrado");
-
-                return Ok(new ClientDTO(client));
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, ex.Message);
-            }
-
-            */
-
-            try
-            {
-
-                Client clientCurrent = GetCurrentClient();
-               
-                return Ok(new ClientDTO(clientCurrent));
-            }
-            catch (Exception ex)
-            {
-
-                return StatusCode(500, ex.Message);
-
-            }
-
-
-        }
+        }    
 
         [HttpPost]
 
@@ -203,6 +93,54 @@ namespace HomeBanking2._0.Controllers
 
                 return StatusCode(500, ex.Message);
             }
+        }
+
+        [HttpGet]
+        public IActionResult GetAllClients()
+        {
+            try
+            {
+                var clientsDTO = _clientService.GetAllClients();
+                return Ok(clientsDTO);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
+        }
+
+        [HttpGet("current")]
+        [Authorize(Policy = "ClientOnly")]
+        public IActionResult GetCurrent()
+        {
+            try
+            {
+
+                Client clientCurrent = GetCurrentClient();
+
+                return Ok(new ClientDTO(clientCurrent));
+            }
+            catch (Exception ex)
+            {
+
+                return StatusCode(500, ex.Message);
+
+            }
+        }
+
+        public Client GetCurrentClient()
+        {
+
+
+            string email = User.FindFirst("Client")?.Value ?? string.Empty;
+            if (string.IsNullOrEmpty(email))
+            {
+                throw new Exception("Usuario no encontrado");
+            }
+
+            Client client = _clientService.GetClientByEmail(email);
+
+            return client;
         }
 
 
@@ -256,25 +194,60 @@ namespace HomeBanking2._0.Controllers
 
                 return Ok(accountsDTO);
 
-
-
             }
             catch (Exception ex)
             {
                 return StatusCode(500, ex.Message);
 
             }
-
-
-
         }
 
+        // traer el cliente autenticado, confirmar que tiene menos de 6 tarjetas.
+        // Si esta OK, crear tarjeta y asignarla. Los numeros de tarjeta y cvv deben ser aleatorios
 
+        [HttpPost("current/cards")]
+        [Authorize(Policy = "ClientOnly")]
 
+        public IActionResult CreateCardToClientAuthenticated([FromBody] NewCardDTO newCardDTO)
+        {
+            try
+            {
+                Client clientCurrent = GetCurrentClient();
 
+                var cardByClient = _cardService.GetAllCardsByType(clientCurrent.Id, newCardDTO.type);
 
+                if (cardByClient.Count() < 3)
+                {
+                    if (!cardByClient.Any(c => c.Color == newCardDTO.color))
+                    {
+                        var newCard = new Card
+                        {
+                            ClientId = clientCurrent.Id,
+                            CardHolder = clientCurrent.FirstName + " " + clientCurrent.LastName,
+                            Color = newCardDTO.color,
+                            Cvv = _cardService.GenerateCVV(),
+                            FromDate = DateTime.Now,
+                            ThruDate = DateTime.Now.AddYears(5),
+                            Number = _cardService.GenerateNumberCard(clientCurrent.Id),
+                            Type = newCardDTO.type,
+                        };
 
+                        _cardService.AddCard(newCard);
+                    }
+                    else
+                    {
+                        return StatusCode(403, "No es posible crear otra tarjeta, llegaste al límite disponible");
+                    }
 
+                }
+                return Ok();
 
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
+
+        }
     }
 }
