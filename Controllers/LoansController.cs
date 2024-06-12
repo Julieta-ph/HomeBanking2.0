@@ -5,6 +5,16 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Linq.Expressions;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.AspNetCore.Authorization;
+using HomeBanking2._0.Services;
+using HomeBanking2._0.Services.Implementations;
+using Humanizer;
+using Microsoft.CodeAnalysis.Elfie.Diagnostics;
+using static System.Runtime.InteropServices.JavaScript.JSType;
+using Microsoft.AspNetCore.Http.HttpResults;
+using Newtonsoft.Json.Linq;
+using NuGet.Protocol.Core.Types;
+using System.ComponentModel;
 
 namespace HomeBanking2._0.Controllers
 {
@@ -40,17 +50,16 @@ namespace HomeBanking2._0.Controllers
             try
             {
                 var loans = _loanRepository.GetAllLoans();
-                var ClientLoan = new List<ClientLoanDTO>();
-                foreach (ClientLoan clientloan in loans)
+                var loansDTO = new List<LoanDTO>();
+                foreach (Loan loan in loans)
                 {
-                    var newLoanDTO = new ClientLoanDTO
+                    var newLoanDTO = new LoanDTO
 
                     {
-                        Id = clientloan.Id,
-                        LoanId = clientloan.Id,
-                        Name = clientloan.Loan.Name,
-                        Amount = clientloan.Amount,
-                        Payments = Convert.ToInt32(clientloan.Payments),
+                        Id = loan.Id,
+                        Name = loan.Name,
+                        MaxAmount = loan.MaxAmount,
+                        Payments = loan.Payments,
                         
                     };
                     ClientLoan.Add(newLoanDTO);
@@ -61,10 +70,115 @@ namespace HomeBanking2._0.Controllers
             {
                 return StatusCode(500, ex);
             }
-
         }
 
-        [Http]
-        
+            //Debe recibir un objeto de solicitud de crédito con los datos del préstamo
+            
+            //Se debe crear una transacción “CREDIT” asociada a la cuenta de destino(el monto debe quedar positivo) con la descripción concatenando el nombre del préstamo y la frase “loan approved”
+            //Se debe actualizar la cuenta de destino sumando el monto solicitado.
+
+        [HttpPost]
+        public IActionResult Post([FromBody] LoanAplicationDTO loanAppDTO)
+        {
+            try
+            {      //UTILIZAMOS EL OBJETO USER PARA LOCALIZAR UN CLIENTE AUTENTIFICADO UTILIZANDO LAS CLAIM
+                   //SI SE LOCALIZA EL USUARIO CON EL MAIL(QUE ES LA CLAIM EN ESTE CASO), ESTA OK
+
+                string email = User.FindFirst("Client") != null ? User.FindFirst("Client").Value : string.Empty;
+
+                Client client = _clientRepository.FindByEmail(email);
+                if (client == null)
+                {
+                    return StatusCode(403, "El usuario no pudo ser encontrado");
+                }
+
+                //Se verifica que el monto del prestamo no sea 0 o menos
+
+                if (loanAppDTO.Amount <= 0)
+                {
+                    return StatusCode(403, "El monto debe ser mayor a $0");
+                }
+
+                //traemos el objeto loan desde el repo utilizando el loanID, a traves de la inyeccion de dependencias                
+                //Verificamos que el préstamo exista
+
+                Loan loan = _loanRepository.FindById(loanAppDTO.LoanId);
+                if (loan == null)
+                {
+                    return StatusCode(403, "El prestamo que usted quiere solicitar no existe");
+                }
+
+                //Verificamos que el monto solicitado no exceda el monto máximo del préstamo
+
+                if (loanAppDTO.Amount > loan.MaxAmount)
+                {
+                    return StatusCode(403, "El prestamo solicitado excede el monto permitido");
+                }
+
+                //Verifica que la cantidad de cuotas se encuentre entre las disponibles del préstamo
+
+                if (loanAppDTO.Payments.IsNullOrEmpty())
+                {
+                    return StatusCode(403, "Es necesario seleccionar la cantidad de cuotas a utilizar");
+                }
+
+                //Extraemos y limpiamos los valores de pago del objeto loan.
+                //Comprobamos si el valor de pago proporcionado por el usuario se encuentra entre las opciones válidas.
+                // tomamos los valores de pago y los almacenamos en una nueva lista
+                var newPaymentValues = loan.Payments.Split(',').Select(s => s.Trim()).ToList();
+                if (!newPaymentValues.Contains(loanAppDTO.Payments.ToString())) //verificamos que el valor del pago sea valido
+                {
+                    return BadRequest("La cantidad de cuentas ingresadas no es valida");
+                }
+
+                //buscamos la cuenta destino en nuestro repo y corroboramos que exista
+                Account toAccount = _accountRepository.FindByNumber(loanAppDTO.ToAccountNumber);
+                if (toAccount == null)
+                {
+                    return StatusCode(403, "La cuenta no existe");
+                }
+
+                //Verificar que la cuenta de destino pertenezca al cliente autenticado
+                if (toAccount.ClientId != client.Id)
+                {
+                    return StatusCode(403, "La cuenta no pertenece al cliente");
+                }
+
+                //Se debe crear una solicitud de préstamo con el monto solicitado sumando el 20% del mismo
+                //calculamos el prestamo y se lo asignamos al cliente
+
+                double finalAmount = loanAppDTO.Amount * 1.2;
+                _clientLoanRepository.Save(new ClientLoan
+                {
+                    ClientId = toAccount.ClientId,
+                    Amount = finalAmount,
+                    Payments = loanAppDTO.Payments,
+                    LoanId = loanAppDTO.LoanId,
+                });
+
+                _transactionRepository.SaveTransaction(new Transaction
+                {
+                    Type = TransactionType.CREDIT.ToString(),
+                    Amount = loanAppDTO.Amount,
+                    Description = "Loan approved " + loan.Name,
+                    AccountId = toAccount.Id,
+                    Date = DateTime.Now,
+
+                });
+
+
+                toAccount.Balance = toAccount.Balance + loanAppDTO.Amount;
+
+                _accountRepository.Save(toAccount);
+
+                return Created("Prestamo creada con Exito", toAccount);
+
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
+        }
+
     }
 }

@@ -1,4 +1,6 @@
-﻿namespace HomeBanking2._0.Models
+﻿using HomeBanking2._0.DTOs;
+
+namespace HomeBanking2._0.Models
 {
     public class ClientLoan
     {
@@ -18,5 +20,9 @@
 
         public long LoanId { get; set; }
 
+        internal static void Add(LoanDTO newLoanDTO)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

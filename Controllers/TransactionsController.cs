@@ -34,17 +34,11 @@ namespace HomeBanking2._0.Controllers
             _accountRepository = accountRepository;
         }
 
-
-        /*
-        
+        /*        
             Debe recibir el monto, la descripción, número de cuenta de origen y número de cuenta de destino como parámetros de solicitud
             Verificar que los parámetros no estén vacíos
-            
-            
-            Verificar que la cuenta de origen pertenezca al cliente autenticado
-          
-           
-            
+                       
+            Verificar que la cuenta de origen pertenezca al cliente autenticado                               
          */
 
         [HttpPost]
