@@ -17,82 +17,53 @@ namespace HomeBanking2._0.Controllers
     {
         //responde la solicitud http de los clientes, que pueden ser web por ejemplo
 
-        private readonly IAccountRepository _accountRepository;
-
-        private readonly IClientService _clientService;
         private readonly IAccountService _accountService;
-
+        private readonly ITransactionsService _transactionService;
 
         public AccountsController(
 
-            IAccountRepository accountRepository,
-
-            IClientService clientService,
-            IAccountService accountService
-
+            IAccountService accountService,
+            ITransactionsService transactionService
         )
 
         {
-            _accountRepository = accountRepository;
 
             _accountService = accountService;
-            _clientService = clientService;
+            _transactionService = transactionService;
         }
-        // GET: api/Accounts
-
-        [HttpGet]
-        //[Authorize(Policy = "AdminOnly")]
-        public ActionResult GetAllAccounts()
-        {
-
-
-            try
-            {
-                var accounts = _accountService.GetAllAccounts();
-                var accountsDTO = accounts.Select(a => new AccountDTO(a)).ToList();
-                return Ok(accountsDTO);
-            }
-            catch (Exception e)
-            {
-                return StatusCode(StatusCodes.Status500InternalServerError, e.Message);
-            }
-        }
-
-
 
         [HttpGet("{id}")]
-        //[Authorize(Policy = "ClientOnly")]
+        [Authorize(Policy = "ClientOnly")]
         public IActionResult GetAccount(long id)
-
         {
             try
             {
                 var account = _accountService.GetAccountById(id);
+                var cuentaId = account.Id;
                 var accountDTO = new AccountDTO(account);
-                return Ok(accountDTO);
+                var transactionsList = _transactionService.GetTransactionByIdList(cuentaId);
+
+                var transactionObject = new List<TransactionDTO>();
+                foreach (var transaction in transactionsList)
+                {
+                    transactionObject = account.Transactions.Select(tr => new TransactionDTO
+                    {
+                        Id = tr.Id,
+                        Type = tr.Type.ToString(),
+                        Amount = tr.Amount,
+                        Description = tr.Description,
+                        Date = tr.Date
+
+                    }).ToList();
+                }
+                return Ok(transactionObject);
             }
             catch (Exception e)
             {
                 return StatusCode(StatusCodes.Status500InternalServerError, e.Message);
             }
+
         }
-
-
-        public Client GetCurrentClient()
-        {
-
-            string email = User.FindFirst("Client")?.Value ?? string.Empty;
-            if (string.IsNullOrEmpty(email))
-            {
-                throw new Exception("Usuario no encontrado");
-            }
-
-            Client client = _clientService.GetClientByEmail(email);
-
-            return client;
-        }
-
-        
 
     }
 
