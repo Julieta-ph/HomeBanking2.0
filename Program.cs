@@ -6,6 +6,8 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using HomeBanking2._0.Services;
 using HomeBanking2._0.Services.Implementations;
 using Microsoft.AspNetCore.Cors.Infrastructure;
+using HomeBanking2._0.Controllers;
+using Microsoft.AspNetCore.Builder;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -45,6 +47,7 @@ builder.Services.AddScoped<IAccountService, AccountService>();
 builder.Services.AddScoped<IClientService, ClientService>();
 builder.Services.AddScoped<ICardService, CardService>();
 builder.Services.AddScoped<ITransactionsService, TransactionService>();
+builder.Services.AddScoped<IAuthService, AuthService>();
 
 //autenticación
 

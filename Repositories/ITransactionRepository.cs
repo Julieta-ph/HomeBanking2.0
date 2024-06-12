@@ -12,5 +12,6 @@ namespace HomeBanking2._0.Repositories
 
         void SaveTransaction(Transaction transaction);
 
+        IQueryable<Transaction> GetTransactionByIdList(long id);
     }
 }

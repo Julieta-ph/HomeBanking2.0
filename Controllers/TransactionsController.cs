@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace HomeBanking2._0.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/transactions")]
     [ApiController]
     public class TransactionsController : ControllerBase
     {
@@ -140,21 +140,15 @@ namespace HomeBanking2._0.Controllers
 
                     _accountRepository.UpdateAccount(toAccount);
 
+                    return Ok();
 
-                        return Ok();
-
-                     }
-                    catch (Exception ex)
+            }
+            catch (Exception ex)
                     {
                         return StatusCode(500, ex.Message);
                     }
             }
-
-
-
-
             
-
         }
 
        

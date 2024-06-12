@@ -41,22 +41,8 @@ namespace HomeBanking2._0.Controllers
                 var account = _accountService.GetAccountById(id);
                 var cuentaId = account.Id;
                 var accountDTO = new AccountDTO(account);
-                var transactionsList = _transactionService.GetTransactionByIdList(cuentaId);
-
-                var transactionObject = new List<TransactionDTO>();
-                foreach (var transaction in transactionsList)
-                {
-                    transactionObject = account.Transactions.Select(tr => new TransactionDTO
-                    {
-                        Id = tr.Id,
-                        Type = tr.Type.ToString(),
-                        Amount = tr.Amount,
-                        Description = tr.Description,
-                        Date = tr.Date
-
-                    }).ToList();
-                }
-                return Ok(transactionObject);
+                
+                return Ok(accountDTO);
             }
             catch (Exception e)
             {

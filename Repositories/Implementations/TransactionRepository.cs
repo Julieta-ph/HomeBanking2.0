@@ -20,11 +20,17 @@ namespace HomeBanking2._0.Repositories.Implementations
                 .FirstOrDefault();
         }
 
+        public IQueryable<Transaction> GetTransactionByIdList(long id)
+        {
+            throw new NotImplementedException();
+        }
+
         public void SaveTransaction(Transaction transaction)
         {
             Create(transaction);
             SaveChanges();
         }
+
 
         
     }

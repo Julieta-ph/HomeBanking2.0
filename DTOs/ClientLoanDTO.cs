@@ -12,6 +12,8 @@ namespace HomeBanking2._0.DTOs
         public double Amount { get; set; }
         public int Payments { get; set; }
 
+        public long ClientId { get; set; }
+
         public ClientLoanDTO() { }
 
         public ClientLoanDTO(ClientLoan clientloan)

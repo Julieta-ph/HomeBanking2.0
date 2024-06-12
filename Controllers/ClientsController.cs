@@ -85,18 +85,11 @@ namespace HomeBanking2._0.Controllers
             return client;
         }
 
-        
-
         [HttpGet]
-      //  [Authorize(Policy = "AdminOnly")]
         public IActionResult GetAllClients()
         {
             try
             {
-                /*
-                var clients = _clientRepository.GetAllClients();
-                */
-
                 var clientsDTO = _clientService.GetAllClients();
                 return Ok(clientsDTO);
             }
@@ -106,18 +99,12 @@ namespace HomeBanking2._0.Controllers
             }
         }
 
-
-
         [HttpGet("{id}")]
 
         public IActionResult GetClientById(long id)
         {
             try
             {
-                /*
-                var client = _clientRepository.FindById(id);
-                */
-
                 var clientByIddto = _clientService.GetClientById(id);
                 return Ok();
             }
@@ -132,43 +119,16 @@ namespace HomeBanking2._0.Controllers
         [Authorize(Policy = "ClientOnly")]
         public IActionResult GetCurrent()
         {
-            /*
-             * Reemplazamos por servicios
             try
             {
-
-                string email = User.FindFirst("Client") != null ? User.FindFirst("Client").Value : null;
-                if (email.IsNullOrEmpty())
-                    return StatusCode(403, "Usuario no encontrado");
-
-                Client client = _clientRepository.FindByEmail(email);
-                if (client == null)
-                    return StatusCode(403, "Usuario no encontrado");
-
-                return Ok(new ClientDTO(client));
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, ex.Message);
-            }
-
-            */
-
-            try
-            {
-
                 Client clientCurrent = GetCurrentClient();
                
                 return Ok(new ClientDTO(clientCurrent));
             }
             catch (Exception ex)
             {
-
                 return StatusCode(500, ex.Message);
-
             }
-
-
         }
 
         [HttpPost]
@@ -196,7 +156,6 @@ namespace HomeBanking2._0.Controllers
 
                 return Ok();
 
-
             }
             catch (Exception ex)
             {
@@ -219,7 +178,6 @@ namespace HomeBanking2._0.Controllers
 
                 Client clientCurrent = GetCurrentClient(); //REVISAR
 
-
                 if (_accountService.GetCountAccountsByClient(clientCurrent.Id) < 3)
                 {
                     Account accountCreated = _accountService.SaveAccount(clientCurrent.Id);
@@ -229,8 +187,6 @@ namespace HomeBanking2._0.Controllers
                 {
                     return StatusCode(403, "No es posible tener más de 3 cuentas");
                 }
-
-
 
             }
             catch (Exception ex)
@@ -255,18 +211,12 @@ namespace HomeBanking2._0.Controllers
                 var accountsDTO = accountsByClient.Select(a => new AccountClientDTO(a)).ToList();
 
                 return Ok(accountsDTO);
-
-
-
             }
             catch (Exception ex)
             {
                 return StatusCode(500, ex.Message);
 
             }
-
-
-
         }
 
 
@@ -299,34 +249,19 @@ namespace HomeBanking2._0.Controllers
                             Number = _cardService.GenerateNumberCard(clientCurrent.Id),
                             Type = newCardDTO.type,
                         };
-
                         _cardService.AddCard(newCard);
-
-
                     }
                     else
                     {
                         return StatusCode(403, "No es posible crear otra tarjeta, llegaste al límite disponible");
                     }
-
-
-
                 }
                 return Ok();
-
             }
             catch (Exception ex)
             {
                 return StatusCode(500, ex.Message);
             }
-
-
-
         }
-
-
-
-
-
     }
 }

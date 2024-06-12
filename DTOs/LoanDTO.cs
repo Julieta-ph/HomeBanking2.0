@@ -1,4 +1,6 @@
-﻿namespace HomeBanking2._0.DTOs
+﻿using HomeBanking2._0.Models;
+
+namespace HomeBanking2._0.DTOs
 {
     public class LoanDTO
     {
@@ -7,5 +9,13 @@
 
         public double MaxAmount { get; set; }
         public string Payments { get; set; }
+
+        public LoanDTO(Loan loan)
+        {
+            Id = loan.Id;
+            Name = loan.Name;
+            MaxAmount = loan.MaxAmount;
+            Payments = loan.Payments;
+        }
     }
 }

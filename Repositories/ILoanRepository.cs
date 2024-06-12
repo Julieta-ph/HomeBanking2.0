@@ -1,4 +1,5 @@
-﻿using HomeBanking2._0.Models;
+﻿using HomeBanking2._0.DTOs;
+using HomeBanking2._0.Models;
 
 namespace HomeBanking2._0.Repositories
 {
@@ -7,6 +8,8 @@ namespace HomeBanking2._0.Repositories
         public IEnumerable<Loan> GetAllLoans();
 
         public Loan FindById(long id);
+
+        
 
     }
 }

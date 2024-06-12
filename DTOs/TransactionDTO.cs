@@ -14,8 +14,17 @@ namespace HomeBanking2._0.DTOs
 
         public DateTime Date { get; set; }
 
-        public long ClientId { get; set; }
+       
 
-        public long AccountId { get; set; }
+        public TransactionDTO(Transaction transaction) {
+
+            Id = transaction.Id;
+            Type = transaction.Type;
+            Amount = transaction.Amount;
+            Date = transaction.Date;
+            Description = transaction.Description;
+        }
+
+
     }
 }

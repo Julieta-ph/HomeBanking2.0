@@ -1,24 +1,13 @@
 ﻿using HomeBanking2._0.Models;
 using HomeBanking2._0.DTOs;
 using HomeBanking2._0.Repositories;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using System.Linq.Expressions;
 using Microsoft.IdentityModel.Tokens;
-using Microsoft.AspNetCore.Authorization;
 using HomeBanking2._0.Services;
-using HomeBanking2._0.Services.Implementations;
-using Humanizer;
-using Microsoft.CodeAnalysis.Elfie.Diagnostics;
-using static System.Runtime.InteropServices.JavaScript.JSType;
-using Microsoft.AspNetCore.Http.HttpResults;
-using Newtonsoft.Json.Linq;
-using NuGet.Protocol.Core.Types;
-using System.ComponentModel;
 
 namespace HomeBanking2._0.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/loans")]
     [ApiController]
     public class LoansController : ControllerBase
     {
@@ -28,12 +17,16 @@ namespace HomeBanking2._0.Controllers
         private readonly ITransactionRepository _transactionRepository;
         private readonly IClientLoanRepository _clientLoanRepository;
 
+        private readonly IClientService _clientService;
+
         public LoansController(
             IAccountRepository accountRepository,
             IClientLoanRepository clientLoanRepository,
             IClientRepository clientRepository,
             ILoanRepository loanRepository,
-            ITransactionRepository transactionRepository
+            ITransactionRepository transactionRepository,
+
+            IClientService clientService
             
             )
         {
@@ -42,29 +35,23 @@ namespace HomeBanking2._0.Controllers
             _loanRepository = loanRepository;
             _transactionRepository = transactionRepository;
             _clientLoanRepository = clientLoanRepository;
+
+            _clientService = clientService;
         }
 
+       
+           
         [HttpGet]
-        public IActionResult Get()
+        public IActionResult GetLoans()
         {
             try
             {
+                
                 var loans = _loanRepository.GetAllLoans();
-                var loansDTO = new List<LoanDTO>();
-                foreach (Loan loan in loans)
-                {
-                    var newLoanDTO = new LoanDTO
 
-                    {
-                        Id = loan.Id,
-                        Name = loan.Name,
-                        MaxAmount = loan.MaxAmount,
-                        Payments = loan.Payments,
-                        
-                    };
-                    ClientLoan.Add(newLoanDTO);
-                }
-                return Ok();
+                var loansDTO = loans.Select(lc => new LoanDTO(lc)).ToList();
+                
+                return Ok(loansDTO);
             }
             catch (Exception ex)
             {
@@ -171,7 +158,7 @@ namespace HomeBanking2._0.Controllers
 
                 _accountRepository.Save(toAccount);
 
-                return Created("Prestamo creada con Exito", toAccount);
+                return Ok();
 
             }
             catch (Exception ex)
