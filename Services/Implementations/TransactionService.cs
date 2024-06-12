@@ -64,7 +64,14 @@ namespace HomeBanking2._0.Services.Implementations
             }
         }
 
+        public List<Transaction> GetTransactionByIdList(long id)
+        {
 
-       
+            var transactionList = _transactionsRepository.GetTransactionByIdList(id);
+            return transactionList.ToList();
+
+        }
+
+
     }
 }

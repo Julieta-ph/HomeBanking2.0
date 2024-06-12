@@ -12,8 +12,8 @@ namespace HomeBanking2._0.Services
 
         int SaveTransaction(Transaction transaction);
 
-        
 
+        List<Transaction> GetTransactionByIdList(long id);
 
 
 
